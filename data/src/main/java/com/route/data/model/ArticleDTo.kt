@@ -2,7 +2,7 @@ package com.route.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Article(
+data class ArticleDTo(
 
 	@field:SerializedName("publishedAt")
 	val publishedAt: String? = null,

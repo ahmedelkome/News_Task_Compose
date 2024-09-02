@@ -57,17 +57,20 @@ kapt {
 
 dependencies {
 
+    //Navigation Component
+    implementation(libs.androidx.navigation.compose)
+
     //ViewModel Compose lifeCycle
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
     //Glide
-    implementation (libs.compose)
+    implementation(libs.compose)
 
     //Hilt Dagger
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
 
     implementation(libs.androidx.core.ktx)

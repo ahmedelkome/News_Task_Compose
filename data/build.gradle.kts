@@ -40,9 +40,17 @@ kapt {
 
 dependencies {
 
+    //Retrofit
+    implementation (libs.retrofit)
+    //Gson Converter
+    implementation (libs.converter.gson)
+    //Logging Interceptor
+    implementation(libs.logging.interceptor)
+
+
     //Hilt Dagger
-    implementation ("com.google.dagger:hilt-android:2.52")
-    kapt ("com.google.dagger:hilt-compiler:2.52")
+    implementation (libs.hilt.android)
+    kapt (libs.hilt.compiler)
 
 
     implementation(libs.androidx.core.ktx)

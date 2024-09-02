@@ -40,6 +40,14 @@ kapt {
 
 dependencies {
 
+    //Room DataBase
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    // To use Kotlin annotation processing tool (kapt)
+    kapt(libs.androidx.room.room.compiler)
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation(libs.androidx.room.ktx)
+
     //Retrofit
     implementation (libs.retrofit)
     //Gson Converter

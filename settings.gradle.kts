@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "News_Task_Compose"
 include(":app")
- 
+include(":data")
+include(":domain")

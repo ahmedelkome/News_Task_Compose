@@ -58,7 +58,7 @@ kapt {
 dependencies {
 
     //Navigation Component
-    implementation(libs.androidx.navigation.compose)
+    implementation (libs.hilt.navigation.compose)
 
     //ViewModel Compose lifeCycle
     implementation(libs.androidx.lifecycle.viewmodel.compose)

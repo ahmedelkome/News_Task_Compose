@@ -1,8 +1,11 @@
 package com.route.news_task_compose.home
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.route.domain.common.ResultWrapper
+import com.route.domain.model.Article
 import com.route.domain.usecase.GetNewsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -13,10 +16,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getNewsUseCase: GetNewsUseCase,
+    private val getNewsUseCase: GetNewsUseCase
 ) : ViewModel(), HomeContract.HomeViewModel {
 
     private val _state = MutableStateFlow<HomeContract.State>(HomeContract.State.Loading)
+    private val _event = MutableLiveData<HomeContract.Events>(HomeContract.Events.Idle)
+    override val event: LiveData<HomeContract.Events> = _event
     override val state: StateFlow<HomeContract.State> = _state
 
 
@@ -25,7 +30,19 @@ class HomeViewModel @Inject constructor(
             is HomeContract.Action.InitPage -> {
                 getNewsByCategory(action.category)
             }
+
+            is HomeContract.Action.Navigate -> {
+                navigateToDetails(action.article)
+            }
         }
+    }
+
+    private fun navigateToDetails(article: Article) {
+        _event.value = HomeContract.Events.NavigateToDetails(article = article)
+    }
+
+    fun setEventToIdle(){
+        _event.value = HomeContract.Events.Idle
     }
 
 

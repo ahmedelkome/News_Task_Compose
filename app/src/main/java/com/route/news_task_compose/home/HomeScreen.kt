@@ -1,5 +1,6 @@
 package com.route.news_task_compose.home
 
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -20,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -32,6 +35,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.Placeholder
@@ -40,6 +44,7 @@ import com.route.domain.model.Article
 import com.route.domain.usecase.GetNewsUseCase
 import com.route.news_task_compose.R
 import com.route.news_task_compose.model.Category
+import com.route.news_task_compose.navigation.screens.Screens
 import com.route.news_task_compose.utils.Constants
 import com.route.news_task_compose.utils.ErrorDialog
 import com.route.news_task_compose.utils.LoadingDialog
@@ -48,7 +53,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -59,7 +64,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     ) {
         Column {
             Spacer(modifier = modifier.height(100.dp))
-            listOfCategories()
+            listOfCategories(navController = navController)
         }
 
     }
@@ -69,9 +74,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 fun listOfCategories(
     modifier: Modifier = Modifier,
     list: List<Category> = Constants.LIST_OF_CATEGORIES,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    var selectedCategory = remember { mutableStateOf("sports") }
+    val selectedCategory = remember { mutableStateOf("sports") }
+    val event by homeViewModel.event.observeAsState(initial = HomeContract.Events.Idle)
     val state by homeViewModel.state.collectAsState()
     LaunchedEffect(key1 = Unit) {
         homeViewModel.doAction(
@@ -105,7 +112,6 @@ fun listOfCategories(
                 Spacer(modifier = modifier.padding(10.dp))
             }
         }
-
         when (state) {
             is HomeContract.State.Failure -> {
                 ErrorDialog(
@@ -122,17 +128,44 @@ fun listOfCategories(
 
             is HomeContract.State.Success -> {
                 val listOfArticle = (state as HomeContract.State.Success).listOfArticle
-                listOfArticle(list = listOfArticle)
+                listOfArticle(
+                    list = listOfArticle,
+                ) { article, position ->
+                    homeViewModel.doAction(HomeContract.Action.Navigate(article = article))
+                    Log.e("TAG", "Action do: $article")
+                }
+            }
+        }
+        LaunchedEffect(key1 = event) {
+            when (event) {
+                HomeContract.Events.Idle -> {
+
+                }
+
+                is HomeContract.Events.NavigateToDetails -> {
+                    Log.e(
+                        "TAG",
+                        "eveeeeeeent value: ${(event as HomeContract.Events.NavigateToDetails).article}",
+                    )
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        "article",
+                        (event as HomeContract.Events.NavigateToDetails).article
+                    )
+                    navController.navigate(Screens.DetailsScreen.route)
+                    homeViewModel.setEventToIdle()
+                }
             }
         }
     }
+
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun listOfArticle(
     modifier: Modifier = Modifier,
-    list: List<Article>
+    list: List<Article>,
+    navigate: (article: Article, position: Int) -> Unit
 ) {
     LazyColumn {
         items(list.size) { position ->
@@ -140,6 +173,9 @@ fun listOfArticle(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(15.dp)
+                    .clickable {
+                        navigate.invoke(list[position], position)
+                    }
             ) {
                 GlideImage(
                     contentScale = ContentScale.FillBounds,
@@ -158,6 +194,7 @@ fun listOfArticle(
     }
 }
 
+
 fun formatDateTime(dateTimeString: String?): String {
     return if (dateTimeString != null) {
         val zonedDateTime = ZonedDateTime.parse(dateTimeString)
@@ -168,14 +205,15 @@ fun formatDateTime(dateTimeString: String?): String {
     }
 }
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun listOfcategory() {
-    listOfArticle(list = listOf())
+    //
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun homePrev() {
-    HomeScreen()
+
 }

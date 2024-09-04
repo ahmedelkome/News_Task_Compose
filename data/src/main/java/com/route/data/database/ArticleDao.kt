@@ -10,10 +10,12 @@ import com.route.domain.model.Article
 interface ArticleDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAllPopular(listOfArticle: List<Article>)
+    suspend fun insertAllArticle(listOfArticle: List<Article>)
 
 
     @Query("SELECT * FROM Article_Table")
     suspend fun getAllArticle(): List<Article>
 
+    @Query("DELETE FROM Article_Table")
+    suspend fun clearList()
 }

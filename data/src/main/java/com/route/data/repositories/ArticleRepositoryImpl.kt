@@ -19,7 +19,7 @@ class ArticleRepositoryImpl @Inject constructor(
             if (ConnectivityChecker.isNetworkAvailable()) {
                 articleOnlineDataSource.getNewsByCategory(category)
             } else {
-                articleOfflineDataSource.getAllArticle()
+                articleOfflineDataSource.getAllArticle(category)
             }
 
         }

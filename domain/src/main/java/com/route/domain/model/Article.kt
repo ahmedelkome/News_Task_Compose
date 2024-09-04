@@ -22,6 +22,8 @@ data class Article(
     @ColumnInfo(name = "Publish At")
     val publishAt: String?,
     @ColumnInfo(name = "Content")
-    val content: String?
+    val content: String?,
+    @ColumnInfo(name = "Category")
+    var category: String?=null
 ) : Parcelable {
 }

@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.route.domain.model.Article
 
-@Database(entities = [Article::class], version = 1)
+@Database(entities = [Article::class], version = 3)
 abstract class MyDataBase :RoomDatabase(){
     abstract fun articleDao():ArticleDao
 }

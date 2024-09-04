@@ -15,9 +15,9 @@ class ArticleOfflineDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllArticle(): List<Article> {
+    override suspend fun getAllArticle(category:String): List<Article> {
         return safeData {
-            val listOfArticle = myDataBase.articleDao().getAllArticle()
+            val listOfArticle = myDataBase.articleDao().getAllArticle(category = category)
             listOfArticle
         }
     }

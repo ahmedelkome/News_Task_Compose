@@ -15,9 +15,8 @@ class ArticleOnlineDataSourceImpl @Inject constructor(
         return safeData {
             val listOfNews =
                 webService.getNewsByCategory(category).articleDTos?.filterNotNull()!!.map {
-                    it.toArticle()
+                    it.toArticle().copy(category = category)
                 }
-            myDataBase.articleDao().clearList()
             myDataBase.articleDao().insertAllArticle(listOfArticle = listOfNews)
             listOfNews
         }

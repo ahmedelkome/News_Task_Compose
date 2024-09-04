@@ -1,5 +1,7 @@
 package com.route.news_task_compose.details
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,16 +22,21 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -39,8 +46,14 @@ import com.route.news_task_compose.R
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DetailsScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun DetailsScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    detailsViewModel: DetailsViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
     val article = navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
+    val event by detailsViewModel.event.observeAsState()
     article?.let {
         Box(
             modifier = modifier
@@ -75,16 +88,52 @@ fun DetailsScreen(navController: NavController, modifier: Modifier = Modifier) {
                 )
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                    onClick = { }) {
+                    onClick = {
+                        detailsViewModel.doAction(DetailsContract.DetailsAction.Share(article.url!!))
+                    }) {
                     Text(text = "Share", color = Color.White)
                 }
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                    onClick = { }) {
+                    onClick = {
+                        detailsViewModel.doAction(DetailsContract.DetailsAction.Open(article.url!!))
+                    }) {
                     Text(text = "Open Link", color = Color.White)
                 }
             }
 
+        }
+    }
+
+    LaunchedEffect(key1 = event) {
+        when (event) {
+            DetailsContract.DetailsEvents.DetailsIdle -> {
+
+            }
+
+            is DetailsContract.DetailsEvents.OpenLink -> {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse((event as DetailsContract.DetailsEvents.OpenLink).link)
+                )
+                context.startActivity(intent)
+            }
+
+            is DetailsContract.DetailsEvents.ShareArticle -> {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        (event as DetailsContract.DetailsEvents.ShareArticle).shareArticle
+                    )
+                    type = "text/plain"
+                }
+                context.startActivity(Intent.createChooser(intent, "Share via"))
+            }
+
+            null -> {
+
+            }
         }
     }
 

@@ -45,6 +45,9 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:2.52")
     kapt ("com.google.dagger:hilt-compiler:2.52")
 
+    //Room DataBase
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

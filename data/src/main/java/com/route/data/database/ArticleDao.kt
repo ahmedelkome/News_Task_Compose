@@ -9,7 +9,7 @@ import com.route.domain.model.Article
 @Dao
 interface ArticleDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllArticle(listOfArticle: List<Article>)
 
 

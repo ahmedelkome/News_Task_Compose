@@ -70,6 +70,7 @@ dependencies {
 
     //Hilt Dagger
     implementation(libs.hilt.android)
+    implementation(libs.androidx.runtime.livedata)
     kapt(libs.hilt.compiler)
 
 

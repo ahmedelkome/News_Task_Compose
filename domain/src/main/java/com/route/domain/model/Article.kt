@@ -1,11 +1,15 @@
 package com.route.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Article (
-    val title:String?=null,
-    val description:String?=null,
-    val url:String?=null,
-    val urlImage:String?=null,
-    val publishAt:String?=null,
-    val content:String?=null
-){
+    val title:String?,
+    val description:String?,
+    val url:String?,
+    val urlImage:String?,
+    val publishAt:String?,
+    val content:String?
+): Parcelable {
 }

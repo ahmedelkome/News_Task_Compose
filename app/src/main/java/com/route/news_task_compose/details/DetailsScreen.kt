@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.route.domain.model.Article
 import com.route.news_task_compose.R
+import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -53,7 +55,7 @@ fun DetailsScreen(
 ) {
     val context = LocalContext.current
     val article = navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
-    val event by detailsViewModel.event.observeAsState()
+    val event by detailsViewModel.event.collectAsState(initial = null)
     article?.let {
         Box(
             modifier = modifier
@@ -104,6 +106,7 @@ fun DetailsScreen(
 
         }
     }
+    
 
     LaunchedEffect(key1 = event) {
         when (event) {
@@ -137,6 +140,7 @@ fun DetailsScreen(
         }
     }
 
+    Log.e("TAG", "event value: $event" )
 
     Log.e("TAG", "DetailsScreen: $article")
 }

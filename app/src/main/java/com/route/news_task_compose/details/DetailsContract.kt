@@ -1,12 +1,12 @@
 package com.route.news_task_compose.details
 
-import androidx.lifecycle.LiveData
-import com.route.domain.model.Article
+import kotlinx.coroutines.flow.SharedFlow
+
 
 class DetailsContract {
     interface DetailsViewModel {
-        fun doAction(action: DetailsAction)
-        val event: LiveData<DetailsEvents>
+         fun doAction(action: DetailsAction)
+        val event: SharedFlow<DetailsEvents>
     }
 
     sealed class DetailsAction {
